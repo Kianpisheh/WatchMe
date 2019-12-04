@@ -91,6 +91,9 @@ public class MainMenuActivity extends WearableActivity {
         // get sensors
         SensorManager sensorManager = (SensorManager) this.getSystemService(Context.SENSOR_SERVICE);
         List<Sensor> sensors = sensorManager.getSensorList(Sensor.TYPE_ALL);
+        for (Sensor sensor : sensors) {
+            System.out.println(sensor.getName());
+        }
         List<Integer> sensorsList = new ArrayList<>();
         List<String> sensorNames = new ArrayList<>();
         for(Sensor sensor: sensors) {

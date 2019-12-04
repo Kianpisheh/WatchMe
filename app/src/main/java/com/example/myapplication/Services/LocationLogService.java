@@ -1,12 +1,15 @@
 package com.example.myapplication.Services;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -29,6 +32,8 @@ public class LocationLogService extends Service {
     private static final int LOCATION_INTERVAL = 1000;
     private static final float LOCATION_DISTANCE = 0;
     private FileOutputStream outputStream = null;
+    public static final String CHANNEL_ID = "ForegroundServiceChannel";
+
 
 
     LocationListener[] mLocationListeners = new LocationListener[]{
@@ -41,17 +46,34 @@ public class LocationLogService extends Service {
         return null;
     }
 
+
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel serviceChannel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "Foreground Service Channel",
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(serviceChannel);
+        }
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.e(TAG, "onStartCommand (Location)");
 
 
+        createNotificationChannel();
         Intent notificationIntent = new Intent(this, MainMenuActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
                 0, notificationIntent, 0);
 
-        Notification notification = new NotificationCompat.Builder(this, "ForegroundServiceChannel")
-                .setContentTitle("Foreground Service3")
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle("Foreground Service")
+                .setContentText("asda")
                 .setContentIntent(pendingIntent)
                 .build();
 

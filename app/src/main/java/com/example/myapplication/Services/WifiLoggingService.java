@@ -2,6 +2,8 @@ package com.example.myapplication.Services;
 
 import android.app.IntentService;
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -10,6 +12,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
@@ -34,21 +37,38 @@ public class WifiLoggingService extends Service {
     private FileOutputStream outputStream = null;
     private boolean stopScanning = true;
 
+    public static final String CHANNEL_ID = "ForegroundServiceChannel";
+
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel serviceChannel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "Foreground Service Channel",
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(serviceChannel);
+        }
+    }
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+        createNotificationChannel();
         Intent notificationIntent = new Intent(this, MainMenuActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
                 0, notificationIntent, 0);
 
-        Notification notification = new NotificationCompat.Builder(this, "ForegroundServiceChannel")
-                .setContentTitle("Foreground Service2")
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle("Foreground Service")
+                .setContentText("asda")
                 .setContentIntent(pendingIntent)
                 .build();
 
         startForeground(1, notification);
-
         stopScanning = false;
 
         // create the file
@@ -77,7 +97,6 @@ public class WifiLoggingService extends Service {
                         System.out.println("wifi thread: " + Thread.currentThread());
                         wifiManager.startScan();
                         sleep(2*1000);
-                        //wifiScanHandler.post(this);
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -94,11 +113,12 @@ public class WifiLoggingService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             scanResults = wifiManager.getScanResults();
+            System.out.println("wifi scan");
             for (ScanResult scanResult : scanResults) {
                 if (outputStream != null) {
                     try {
-                        outputStream.write((System.currentTimeMillis() + ", ").getBytes());
-                        outputStream.write((scanResult.SSID + ", ").getBytes());
+                        outputStream.write((System.currentTimeMillis() + ",").getBytes());
+                        outputStream.write((scanResult.SSID + ",").getBytes());
                         outputStream.write((scanResult.BSSID + ",").getBytes());
                         outputStream.write((scanResult.level + "\n").getBytes());
                     } catch (Exception e) {

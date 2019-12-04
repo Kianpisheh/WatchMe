@@ -48,6 +48,7 @@ public class DataWriter {
 
         // create the files
         for (String sensorName : sensorsList) {
+            sensorName = sensorName.split("/")[0];
             File file = new File(storageDir, sensorName + ".csv");
             outputStreamsMap.put(sensorName, new FileOutputStream(file));
 

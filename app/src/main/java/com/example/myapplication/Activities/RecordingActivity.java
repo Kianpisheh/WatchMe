@@ -49,8 +49,6 @@ public class RecordingActivity extends WearableActivity {
     private EditText labelText;
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,8 +62,6 @@ public class RecordingActivity extends WearableActivity {
         debugDialog.setContentView(R.layout.debug_dialog);
 
         debug_text = findViewById(R.id.debug_textt);
-
-
 
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,7 +96,6 @@ public class RecordingActivity extends WearableActivity {
             resourcePermissions = (HashMap<String, Boolean>) bundle.getSerializable("permissions");
 
         }
-
 
 
         // wifi logging service
@@ -221,7 +216,7 @@ public class RecordingActivity extends WearableActivity {
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Integer msgValue = intent.getIntExtra("message", -1);
+            Long msgValue = intent.getLongExtra("message", -1);
             if (isRecording) {
                 debug_text.setText(String.valueOf(msgValue));
 

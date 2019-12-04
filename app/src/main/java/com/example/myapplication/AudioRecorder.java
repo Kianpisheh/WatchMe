@@ -5,6 +5,8 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
 
+import com.example.myapplication.Model.DataWriter;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -36,7 +38,8 @@ public class AudioRecorder {
         serviceIsDestroyed = false;
     }
 
-    public void start(File file) {
+    public void start() {
+        File file = DataWriter.createAudioFile();
         final File audioFile = file;
         if (serviceIsDestroyed) {return;}
         recordingThread = new Thread(new Runnable() {
